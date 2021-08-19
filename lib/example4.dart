@@ -16,28 +16,31 @@ class HomeScreen2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Calculadora de Factorial'),
+        title: const Text('Returning Data Demo'),
       ),
-      body: Center(
-        child: CalcFact(),
+      body: const Center(
+        child: SelectionButton(),
       ),
     );
   }
 }
 
-class CalcFact extends StatefulWidget {
+class SelectionButton extends StatelessWidget {
+  const SelectionButton({Key? key}) : super(key: key);
+
   @override
-  CalcFact createState() => _CalcFactState();
-}
-
-class _CalcFactState extends State<CalcFact> {
-  String resultado = "";
-
-  void _onPressed() {
-    calcularFactorial(context);
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        _navigateAndDisplaySelection(context);
+      },
+      child: const Text('Pick an option, any option!'),
+    );
   }
 
-  void calcularFactorial(BuildContext context) async {
+  // A method that launches the SelectionScreen and awaits the result from
+  // Navigator.pop.
+  void _navigateAndDisplaySelection(BuildContext context) async {
     // Navigator.push returns a Future that completes after calling
     // Navigator.pop on the Selection Screen.
     final result = await Navigator.push(
@@ -45,25 +48,11 @@ class _CalcFactState extends State<CalcFact> {
       MaterialPageRoute(builder: (context) => const SelectionScreen()),
     );
 
-    setState(() {
-      resultado = "El resultado final es: $result";
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Calculadora de Factorial"),
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Text("$resultado"),
-            ElevatedButton(
-                onPressed: () => _onPressed(), child: Text("Iniciar X!")),
-          ],
-        ));
+    // After the Selection Screen returns a result, hide any previous snackbars
+    // and show the new result.
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text('$result')));
   }
 }
 
